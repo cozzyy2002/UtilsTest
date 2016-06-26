@@ -41,5 +41,8 @@
     <ClCompile Include="TestCases\EnumUnitTest.cpp">
       <Filter>TestCases</Filter>
     </ClCompile>
+    <ClCompile Include="TestCases\Win32UtilsTest.cpp">
+      <Filter>TestCases</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

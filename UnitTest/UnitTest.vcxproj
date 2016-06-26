@@ -163,6 +163,7 @@
     </ClCompile>
     <ClCompile Include="TestCases\ComUtilsTest.cpp" />
     <ClCompile Include="TestCases\EnumUnitTest.cpp" />
+    <ClCompile Include="TestCases\Win32UtilsTest.cpp" />
     <ClCompile Include="UnitTest.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
