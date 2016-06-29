@@ -8,22 +8,29 @@ using namespace ::testing;
 
 class Win32Mock {
 public:
+	Win32Mock() { instance = this; }
+	~Win32Mock() { instance = NULL; }
+
 	MOCK_METHOD1(_CloseHandle, BOOL(HANDLE));
 	MOCK_METHOD0(_GetLastError, DWORD());
+
+	/// Used by replaced global API.
+	static Win32Mock* instance;;
 };
 
-static Win32Mock* g_pWin32Mock;
+Win32Mock* Win32Mock::instance = NULL;
 
 BOOL _CloseHandle(HANDLE h)
 {
-	return g_pWin32Mock->_CloseHandle(h);
+	return Win32Mock::instance ? Win32Mock::instance->_CloseHandle(h) : FALSE;
 }
 
 DWORD _GetLastError()
 {
-	return g_pWin32Mock->_GetLastError();
+	return Win32Mock::instance ? Win32Mock::instance->_GetLastError() : 0;
 }
 
+// Replace global Win23 API
 #define CloseHandle _CloseHandle
 #define GetLastError _GetLastError
 #include "win32/Win32Utils.h"
@@ -32,12 +39,7 @@ DWORD _GetLastError()
 
 class Win32UtilsTest : public Test {
 public:
-	Win32UtilsTest() : m_pWin32Mock(new Win32Mock()), win32Mock(*m_pWin32Mock) {
-		g_pWin32Mock = m_pWin32Mock.get();
-	}
-
-	std::unique_ptr<Win32Mock> m_pWin32Mock;
-	Win32Mock& win32Mock;
+	Win32Mock win32Mock;
 };
 
 /**
