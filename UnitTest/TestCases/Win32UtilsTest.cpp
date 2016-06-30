@@ -1,41 +1,13 @@
 #include "stdafx.h"
 
+#include "win32/Win32Utils.h"
+#include "Win32Mock.h"
+
 #include <memory>
 
 using namespace ::testing;
 
-#pragma region Mock for Win32 API
-
-class Win32Mock {
-public:
-	Win32Mock() { instance = this; }
-	~Win32Mock() { instance = NULL; }
-
-	MOCK_METHOD1(_CloseHandle, BOOL(HANDLE));
-	MOCK_METHOD0(_GetLastError, DWORD());
-
-	/// Used by replaced global API.
-	static Win32Mock* instance;;
-};
-
-Win32Mock* Win32Mock::instance = NULL;
-
-BOOL _CloseHandle(HANDLE h)
-{
-	return Win32Mock::instance ? Win32Mock::instance->_CloseHandle(h) : FALSE;
-}
-
-DWORD _GetLastError()
-{
-	return Win32Mock::instance ? Win32Mock::instance->_GetLastError() : 0;
-}
-
-// Replace global Win23 API
-#define CloseHandle _CloseHandle
-#define GetLastError _GetLastError
-#include "win32/Win32Utils.h"
-
-#pragma endregion
+DECRARE_WIN32_MOCK;
 
 class Win32UtilsTest : public Test {
 public:
@@ -48,9 +20,12 @@ public:
 TEST_F(Win32UtilsTest, CSafeHandle_Normal)
 {
 	const HANDLE handle = (HANDLE)10;
-	EXPECT_CALL(win32Mock, _CloseHandle(handle)).WillOnce(Return(TRUE));
-	EXPECT_CALL(win32Mock, _GetLastError()).Times(0);
+	EXPECT_CALL(win32Mock, CloseHandle(handle)).WillOnce(Return(TRUE));
+	EXPECT_CALL(win32Mock, GetLastError()).Times(0);
 	{
+		Win32HookCloseHandle;
+		Win32HookGetLastError;
+
 		CSafeHandle h(handle);
 	}
 }
@@ -61,9 +36,12 @@ TEST_F(Win32UtilsTest, CSafeHandle_Normal)
 TEST_F(Win32UtilsTest, CSafeHandle_Error)
 {
 	const HANDLE handle = (HANDLE)10;
-	EXPECT_CALL(win32Mock, _CloseHandle(handle)).WillOnce(Return(FALSE));
-	EXPECT_CALL(win32Mock, _GetLastError()).WillOnce(Return(5));
+	EXPECT_CALL(win32Mock, CloseHandle(handle)).WillOnce(Return(FALSE));
+	EXPECT_CALL(win32Mock, GetLastError()).WillOnce(Return(5));
 	{
+		Win32HookCloseHandle;
+		Win32HookGetLastError;
+
 		CSafeHandle h(handle);
 	}
 }
@@ -73,8 +51,10 @@ TEST_F(Win32UtilsTest, CSafeHandle_Error)
 */
 TEST_F(Win32UtilsTest, CSafeHandle_NULL)
 {
-	EXPECT_CALL(win32Mock, _CloseHandle(_)).Times(0);
+	EXPECT_CALL(win32Mock, CloseHandle(_)).Times(0);
 	{
+		Win32HookCloseHandle;
+
 		CSafeHandle h;
 	}
 }
@@ -84,8 +64,10 @@ TEST_F(Win32UtilsTest, CSafeHandle_NULL)
 */
 TEST_F(Win32UtilsTest, CSafeHandle_INVALID)
 {
-	EXPECT_CALL(win32Mock, _CloseHandle(_)).Times(0);
+	EXPECT_CALL(win32Mock, CloseHandle(_)).Times(0);
 	{
+		Win32HookCloseHandle;
+
 		CSafeHandle h(INVALID_HANDLE_VALUE);
 	}
 }

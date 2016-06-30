@@ -16,3 +16,7 @@
 #include "win32/stdafx.h"
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+
+// Use sexyhook 0.8
+// https://code.google.com/archive/p/sexyhook/downloads
+#include <sexyhook.h>
