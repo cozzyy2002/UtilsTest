@@ -65,7 +65,11 @@ TEST(CUnknownImplTest, IUnknown_QueryInterface)
 	EXPECT_EQ((CUnknownImpl*)testee, unk);
 
 	IPersist* persist = (IPersist*)1;
-	EXPECT_EQ(E_NOINTERFACE, testee->QueryInterface(IID_PPV_ARGS(&persist)));
+	HRESULT hr = [&]() {
+		HR_ASSERT_OK(testee->QueryInterface(IID_PPV_ARGS(&persist)));	// Should return error
+		return S_OK;
+	}();
+	EXPECT_EQ(E_NOINTERFACE, hr);
 	EXPECT_EQ(NULL, persist);
 
 	EXPECT_EQ(0, testee->Release());
@@ -85,7 +89,11 @@ TEST(CUnknownImplTest, IPersist_QueryInterface)
 	EXPECT_EQ((IPersist*)testee, persist);
 
 	IPersistStream* stream = (IPersistStream*)1;
-	EXPECT_EQ(E_NOINTERFACE, testee->QueryInterface(IID_PPV_ARGS(&stream)));
+	HRESULT hr = [&]() {
+		HR_ASSERT_OK(testee->QueryInterface(IID_PPV_ARGS(&stream)));	// Should return error
+		return S_OK;
+	}();
+	EXPECT_EQ(E_NOINTERFACE, hr);
 	EXPECT_EQ(NULL, stream);
 
 	EXPECT_EQ(1, testee->Release());
