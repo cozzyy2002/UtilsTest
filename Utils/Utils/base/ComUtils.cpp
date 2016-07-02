@@ -29,7 +29,7 @@ HRESULT hrCheck(HRESULT exp, LPCTSTR expStr, LPCTSTR src, int line)
 {
 	if (FAILED(exp)) {
 		LOG4CPLUS_ERROR(logger, 
-			expStr << _T("failed: 0x") << std::hex << exp
+			expStr << _T(" failed. HRESULT=0x") << std::hex << exp
 			<< _T(" at:\n") << src << _T("(") << std::dec << line << _T(")"));
 		//_ftprintf_p(stderr, _T("%s faild: 0x%08lx at:\n%s(%d)\n"), expStr, exp, src, line);
 	}
