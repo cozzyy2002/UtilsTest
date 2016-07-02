@@ -35,3 +35,4 @@ Debug
 *.opendb
 *.db
 *.user
+*.log
