@@ -40,12 +40,33 @@ protected:
 	This object can be used in the process that created the object,
 	except used as source of copy constructor or = operator.
 */
-class CSafeHandleEx : public CSafeHandle {
+template<
+	DWORD	dwDesiredAccess = 0,
+	BOOL	bInheritHandle = FALSE,
+	DWORD	dwOptions = DUPLICATE_SAME_ACCESS
+>
+class CCopyableSafeHandle : public CSafeHandle {
 public:
-	CSafeHandleEx(HANDLE h = NULL);
+	CCopyableSafeHandle(HANDLE h = NULL)
+		: CSafeHandle(h)
+		, m_process(GetCurrentProcess()) {}
 
-	CSafeHandleEx(const CSafeHandleEx& other);
-	CSafeHandleEx& operator=(const CSafeHandleEx& other);
+	CCopyableSafeHandle(const CCopyableSafeHandle& other)
+		: m_process(GetCurrentProcess()) { *this = other; }
+
+	CCopyableSafeHandle& operator=(const CCopyableSafeHandle& other)
+	{
+		HANDLE handle;
+		HRESULT hr = WIN32_EXPECT(
+			DuplicateHandle(other.m_process, other, m_process, &handle,
+				dwDesiredAccess, bInheritHandle, dwOptions)
+		);
+		if (SUCCEEDED(hr)) {
+			m_handle.reset(handle);
+		}
+
+		return *this;
+	}
 
 protected:
 	// Process handle in which this object is created.

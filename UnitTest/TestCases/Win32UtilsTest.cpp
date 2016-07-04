@@ -74,9 +74,12 @@ TEST_F(CSafeHandleTest, CSafeHandle_INVALID)
 	}
 }
 
-class CSafeHandleExTest : public CSafeHandleTest {};
+class CCopyableSafeHandleTest : public CSafeHandleTest {
+public:
+	typedef CCopyableSafeHandle<> CSafeHandleEx;
+};
 
-TEST_F(CSafeHandleExTest, operator_assign)
+TEST_F(CCopyableSafeHandleTest, operator_assign)
 {
 	// Handle values assigned to m_handle or m_process, and they should be closed.
 	for (int h = 1; h < 6; h++) {
@@ -104,7 +107,7 @@ TEST_F(CSafeHandleExTest, operator_assign)
 	}
 }
 
-TEST_F(CSafeHandleExTest, duplicate_error)
+TEST_F(CCopyableSafeHandleTest, duplicate_error)
 {
 	// Handle values assigned to m_handle or m_process, and they should be closed.
 	for (int h = 1; h < 5; h++) {
