@@ -82,3 +82,25 @@ TEST_F(EnumTest, WeekDay_multiInstance)
 	EXPECT_EQ(WeekDay::Values::FRI, d3)		<< "Instance created by copy constructor";
 	EXPECT_STREQ(_T("FRI"), d3.toString())		 << "Instance created by copy constructor";
 }
+
+ENUM_CLASS(Month, Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec);
+
+TEST(EnumClassTest, 1)
+{
+	Month month;
+	EXPECT_EQ(Month::FROM(12), MonthValue::COUNT);
+	EXPECT_EQ(Month::FROM(-1), MonthValue::INVALID);
+	EXPECT_FALSE(month.isValid());
+
+	EXPECT_STREQ(_T("UNKNOWN"), month.toString());
+
+	EXPECT_STREQ(_T("Jan"), month.toString(MonthValue::Jan));
+	EXPECT_STREQ(_T("Feb"), month.toString(MonthValue::Feb));
+	EXPECT_STREQ(_T("Mar"), month.toString(MonthValue::Mar));
+
+	std::cout << "month=" << month << std::endl;
+	std::cout << "month=" << Month(Month::Value::Aug) << std::endl;
+
+	Month m(MonthValue::Apr);
+	std::cout << "month=" << m << std::endl;
+}
