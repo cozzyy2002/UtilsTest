@@ -13,7 +13,7 @@
 
 
 // TODO: プログラムに必要な追加ヘッダーをここで参照してください
-#include "win32/stdafx.h"
+#include <win32/stdafx.h>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
